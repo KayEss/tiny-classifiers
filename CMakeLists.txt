@@ -1,3 +1,7 @@
+cmake_minimum_required(VERSION 3.6)
+project(tiny-classifiers)
+
+
 add_executable(tiny-classifier
         tiny-classifier.cpp
     )

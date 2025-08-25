@@ -1,0 +1,9 @@
+{
+    "index": ["README.site.md"],
+    "ignore": {
+        "names": [
+            "CMakeLists.txt",
+            "README.md"
+        ]
+    }
+}
