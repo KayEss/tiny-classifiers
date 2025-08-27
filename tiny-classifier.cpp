@@ -10,12 +10,11 @@ Classifier}}
 */
 /**
  *
- * My first ever paid programming work way back in 1985 was in neural networks.
- * Clearly the field has advanced a lot since then. So, although I've been
- * thinking about them for a long time now, I haven't really kept up with what
- * modern neural are doing. I figured it's time to rectify that, and lucky for
- * me Welch Labs have put out some videos with enough technical detail for me to
- * think I can replicate their results.
+ * My first ever paid programming work, way back in 1985, was in neural
+ * networks. Since then I have not kept up with it. It's more than overdue that
+ * I rectify that, and the good news is that [Welch
+ * Labs](https://www.youtube.com/@WelchLabsVideo) have put out some Youtube
+ * videos going through the basics slowly enough that even I could follow them.
  *
  * <aside class="sidebar">
  *
@@ -32,13 +31,14 @@ Classifier}}
  *
  * </aside>
  *
- * The second video in particular looked interesting as it contains what I think
- * is more than enough detail to write some code to do what is showcased in the
- * video.
+ * The second video in particular, looked interesting as it contains, what I
+ * think is, more than enough detail to write some code to replicate what is
+ * showcased in the video.
  *
- * In this file{{footnote}} is an implementation of the basic ideas in the
- * second video, showing how they could translate to C++ with some explanations
- * of what's happening. You should certainly watch the Welch Labs videos first.
+ * In this file{{footnote}} I've tried to write a replication of what is show in
+ * that second video. I've done it in C++ with some explanations of what's
+ * happening, but not as much or as thoroughly as in the vide. You should
+ * certainly watch the Welch Labs videos first.
  *
  * {{footnote
  * Not all of the required code is in this file. There's also a few
@@ -46,6 +46,9 @@ Classifier}}
  * detract from the main narrative I want to tell, so I've pushed them into the
  * other headers. They will be mentioned as we use introduce that
  * functionality.
+ *
+ * In any case [a repo is on
+ * Github](https://github.com/KayEss/tiny-classifiers).
  * }}
  *
  * As usual, mistakes are all my own. I think this code is an accurate
