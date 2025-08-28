@@ -4,7 +4,7 @@
     Categories:/C++
     Categories:/Exposition}}
 {{field created 2025-08-18T07:20:42.993Z}}
-{{field lastUpdate 2025-08-25T11:16:55.683Z}}
+{{field lastUpdate 2025-08-28T10:00:06.159Z}}
 {{field displayName Tiny Classifiers/tiny-classifier.cpp — Our First Tiny
 Classifier}}
 */
@@ -608,11 +608,19 @@ void operator-=(
 /**
  *
  * {{footnote
- * The last two functions are extremely similar to each other, and the looping
- * structure is very similar to other functions we've also defined. What's the
- * higher order function there that will allow us to abstract out the looping
- * construct from the operations carried out? Exploring that space would be a
- * very interesting exercise.
+ * The last two functions (and this one) are extremely similar to each other,
+ * and the looping structure is very similar to other functions we've also
+ * defined. What's the higher order function there that will allow us to
+ * abstract out the looping construct from the operations carried out?
+ *
+ * The loops aren't particularly safe either. What happens if we accidentally
+ * use `Cities` instead of `Weights` in the inner loop? We'd run off the end of
+ * the array, and that would be bad. The compiler isn't going to give you an
+ * error or warning with the code as we have it, even with warning levels
+ * cranked up.
+ *
+ * Does that make this code bad? Frankly, yes. It also makes exploring how to
+ * fix this is an interesting exercise.
  * }}
  *
  * The final thing we need to do before starting to assemble everything is to be
