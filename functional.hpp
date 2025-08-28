@@ -1,6 +1,6 @@
 /**
 {{field created 2025-08-21T06:54:17.304Z}}
-{{field lastUpdate 2025-08-23T04:02:18.400Z}}
+{{field lastUpdate 2025-08-28T10:00:06.159Z}}
 {{field displayName Tiny Classifiers/functional.hpp}}
  */
 #pragma once
@@ -10,7 +10,7 @@
 
 
 template<typename Lambda>
-inline auto by_index(
+constexpr inline auto by_index(
         std::size_t const start_index,
         std::size_t const max_index,
         Lambda &&lambda) {
@@ -19,6 +19,6 @@ inline auto by_index(
     }
 }
 template<typename Lambda>
-inline auto by_index(std::size_t const max_index, Lambda &&lambda) {
+constexpr inline auto by_index(std::size_t const max_index, Lambda &&lambda) {
     return by_index({}, max_index, std::forward<Lambda>(lambda));
 }
