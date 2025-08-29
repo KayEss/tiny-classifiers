@@ -4,7 +4,7 @@
     Categories:/C++
     Categories:/Exposition}}
 {{field created 2025-08-18T07:20:42.993Z}}
-{{field lastUpdate 2025-08-29T06:08:36.473Z}}
+{{field lastUpdate 2025-08-29T10:13:09.904Z}}
 {{field displayName Tiny Classifiers/tiny-classifier.cpp — Our First Tiny
 Classifier}}
 */
@@ -48,8 +48,8 @@ Classifier}}
  * other headers. They will be mentioned as we use introduce that
  * functionality.
  *
- * In any case [a repo is on
- * Github](https://github.com/KayEss/tiny-classifiers).
+ * In any case [the source code for this file is available on
+ * Github](https://github.com/KayEss/tiny-classifiers/blob/main/tiny-classifier.cpp).
  * }}
  *
  * As usual, mistakes are all my own. I think this code is an accurate
