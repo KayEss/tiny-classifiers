@@ -4,17 +4,18 @@
     Categories:/C++
     Categories:/Exposition}}
 {{field created 2025-08-18T07:20:42.993Z}}
-{{field lastUpdate 2025-08-28T10:00:06.159Z}}
+{{field lastUpdate 2025-08-29T06:08:36.473Z}}
 {{field displayName Tiny Classifiers/tiny-classifier.cpp — Our First Tiny
 Classifier}}
 */
 /**
  *
- * My first ever paid programming work, way back in 1985, was in neural
- * networks. Since then I have not kept up with it. It's more than overdue that
- * I rectify that, and the good news is that [Welch
- * Labs](https://www.youtube.com/@WelchLabsVideo) have put out some Youtube
- * videos going through the basics slowly enough that even I could follow them.
+ * My first ever paid programming work, way back in 1985 {{include
+ * Acronym:/CE.md}}, was in neural networks. Since then I have not kept up with
+ * it. It's more than overdue that I rectify that, and the good news is that
+ * [Welch Labs](https://www.youtube.com/@WelchLabsVideo) have put out some
+ * Youtube videos, going through the basics slowly enough that even I could
+ * follow them.
  *
  * <aside class="sidebar">
  *
@@ -27,7 +28,7 @@ Classifier}}
  * 3. [Why Deep Learning Works Unreasonably
  * Well](https://www.youtube.com/watch?v=qx7hirqgfuU)
  *
- * This page concentrates on the second article.
+ * The code in this page attempts to replicate the results in the second video.
  *
  * </aside>
  *
@@ -37,8 +38,8 @@ Classifier}}
  *
  * In this file{{footnote}} I've tried to write a replication of what is show in
  * that second video. I've done it in C++ with some explanations of what's
- * happening, but not as much or as thoroughly as in the vide. You should
- * certainly watch the Welch Labs videos first.
+ * happening, but not as much or as thoroughly as in the video. _You should
+ * certainly watch the Welch Labs videos first_.
  *
  * {{footnote
  * Not all of the required code is in this file. There's also a few
@@ -81,10 +82,17 @@ using one_d = parameters<1, 3>;
 using two_d = parameters<2, 4>;
 /**
  *
- * For the one dimensional case we'll only consider three of the cities, and
- * including the fourth city requires us to use a second dimension in the
+ * For the one dimensional case we'll only consider three of the cities.
+ * Including the fourth city requires us to use a second dimension in the
  * network and both coordinates of the city locations.
  *
+ * The code will handle both cases without modification{{footnote}} so we won't
+ * need to re-write anything to run both models.
+ *
+ * {{footnote
+ * There is only one place where we need different code, and we can get the
+ * compiler to choose the correct code for us.
+ * }}
  *
  * ## Training data
  *
@@ -132,10 +140,11 @@ auto constexpr cities = std::array{
  *
  * ### Choosing a training example
  *
- * In order to train the neural network we need to pick random locations in our
- * training data, run them through the network and see what city it thinks the
- * location belongs to. We can then use that to adjust the model in order to
- * make it more accurate over time.
+ * In order to train the neural network, we need to pick random locations in our
+ * training data, run them through the network, and see what city it thinks the
+ * location belongs to. We can then use that result to adjust the model in order
+ * to make it more accurate next time. With enough repetitions, the model will
+ * keep giving correct answers.
  *
  * {{footnote
  * The file [_random.hpp_](./random.hpp) contains `pick_index` that allows us to
@@ -156,9 +165,9 @@ auto pick_random_geopos(std::size_t const city_index) {
 }
 /**
  *
- * A type that pulls this together will help us keep the code later on clear.
- * This `example` type will hold the city that we've picked together with the
- * `geopos` values that we're using.
+ * A type that records our training example will help us keep the code later on
+ * clear. This `example` type will hold the city that we've picked together with
+ * the `geopos` values that we're using.
  *
  */
 template<std::size_t Inputs, std::size_t Cities>
@@ -187,11 +196,14 @@ struct example {
 };
 /**
  *
+ * ### Neurons
+ *
  * Now we can get to something more directly applicable to our problem domain:
  * our neuron type. It's pretty simple as it's just a set of weights together
  * with a bias value.
  *
  */
+#include "array.hpp"
 template<std::size_t Weights>
 struct neuron {
     /**
@@ -210,6 +222,10 @@ struct neuron {
     /**
      * We also need to initialise the weights with random numbers. The
      * `random_weight` function returns a `float` between plus and minus one.
+     *
+     * To keep the implementation tidy, we define a function `array_of` in
+     * [_array.hpp_](./array.hpp) which will give us an array built from
+     * multiple copies of the input value, or by applying a lambda.
      */
     weights_type weights =
             array_of<Weights>([](auto) { return random_weight(); });
@@ -230,6 +246,9 @@ using layer_type = std::array<neuron<Weights>, Cities>;
  * easily iterate over one or more arrays by their indices.
  * }}
  *
+ *
+ * ### Model results
+ *
  * A final utility type that we need will store the results of our model's
  * predictions{{footnote}}.
  *
@@ -248,9 +267,10 @@ struct result {
     /**
      * The answer that the model has output can be calculated from the
      * `probabilities` field -- we'll simply pick the one that has the highest
-     * number. An LLM might use the probability distribution directly to randomly
-     * choose an output, but for what we're doing here this is good and makes it
-     * easier to see how we'll get the model to learn what we want it to.
+     * number. An {{include Acronym:/LLM.md}} might use the probability
+     * distribution directly to randomly choose an output, but for what we're
+     * doing here this is good and makes it easier to see how we'll get the
+     * model to learn what we want it to.
      */
     std::size_t answer = [this]() {
         std::size_t answer{};
@@ -262,12 +282,12 @@ struct result {
         return answer;
     }();
     /**
-     * A final useful number is the loss. This is a measure of how wrong the
+     * A final useful number is the _loss_. This is a measure of how wrong the
      * model is at the moment. The calculation here is something called the
      * "Cross Entropy Loss". We will track and display the loss value, but (as
      * we'll see later) it isn't actually used in the calculations for the back
      * propagation. It is a very useful number to help us to understand how far
-     * off the model currently is.
+     * off the model currently is though.
      */
     float loss = -std::log(probabilities[example.city_index]);
 };
@@ -327,11 +347,7 @@ auto operator*(
  *
  * This product needs to be calculated across the entire layer of neurons.
  *
- * To keep the implementation tidy, we define a function `array_of` in
- * [_array.hpp_](./array.hpp) that will give us an array built from multiple
- * copies of the input value, or by applying a lambda.
  */
-#include "array.hpp"
 template<std::size_t Weights, std::size_t Cities>
 auto operator*(
         layer_type<Weights, Cities> const &layer,
@@ -362,7 +378,7 @@ auto softmax(std::array<float, Cities> const &values) {
      * output from each neuron. This amplifies large numbers by making them even
      * larger, but removes negative numbers by remapping larger negative numbers
      * to exponentially smaller positive numbers (nearer and nearer zero as the
-     * negative value becomes larger. This gives us a set of numbers that are
+     * negative value becomes larger). This gives us a set of numbers that are
      * all larger than zero.
      */
     std::array<float, Cities> output;
@@ -429,7 +445,7 @@ auto calculate_result(
  * to get to the lowest point.
  *
  * When doing this in the real world (for example, walking down a mountain
- * looking for a way to the sea), a good heuristic is to simply walk down hill
+ * looking for a way to the sea), a good heuristic is to simply walk down-hill
  * as much as you can. Eventually you'll most likely reach the sea (although it
  * may involve walking around some lakes to get there){{footnote}}.
  *
@@ -460,7 +476,7 @@ auto calculate_result(
  * weights and then the softmax calculation), We then compose them by
  * multiplying them to give us the final gradient descent vector.
  *
- * The derivative that we calculate this way does point up the slop rather than
+ * The derivative that we calculate this way points up the slope rather than
  * down the slope, but this simply means we subtract it from our model rather
  * than add it.
  *
@@ -477,17 +493,17 @@ auto layer_derivative(::example<Weights, Cities> const &example) {
      * {{footnote
      * I feel uneasy about this. I wouldn't be surprised to learn that bias
      * derivative should be different, but it's unclear to me how it would
-     * change. We are going to use other terms on bias (from the softmax
-     * derivative) before we have our final result though, and as we're
-     * multiplying there then using one makes some sense.
+     * change. We are going to multiply this number by other terms (from the
+     * softmax derivative) before we have our final result though, and from that
+     * perspective one is the correct neutral value.
      * }}
      *
      * Because we're only dealing with lines, the derivative for the weights is
-     * simply the input parameter. The derivative value for the bias appears to
-     * be one, but the video doesn't justify this. From everything I remember
-     * about calculus I think technically this should be zero,  but because of
-     * the nature of how we'll apply the derivative, that would mean that the
-     * bias would never change{{footnote}}.
+     * simply the input parameter. The derivative value for the bias used in the
+     * videos appears to be one, but the video doesn't justify this. From
+     * everything I remember about calculus I think technically this should be
+     * zero, but because of the nature of how we'll apply the derivative, that
+     * would mean that the bias would never change{{footnote}}.
      *
      * The derivative consists of a value for the bias and one for each weight.
      * We could put that into a separate data structure, but we already have one
@@ -608,10 +624,11 @@ void operator-=(
 /**
  *
  * {{footnote
- * The last two functions (and this one) are extremely similar to each other,
- * and the looping structure is very similar to other functions we've also
- * defined. What's the higher order function there that will allow us to
- * abstract out the looping construct from the operations carried out?
+ * The last three functions are extremely similar to each other, with the exact
+ * same pair of nested loops, but important differences in how the values to be
+ * assigned are calculated. What's the higher order function there that will
+ * allow us to abstract out the looping construct from the operations carried
+ * out?
  *
  * The loops aren't particularly safe either. What happens if we accidentally
  * use `Cities` instead of `Weights` in the inner loop? We'd run off the end of
@@ -620,7 +637,9 @@ void operator-=(
  * cranked up.
  *
  * Does that make this code bad? Frankly, yes. It also makes exploring how to
- * fix this is an interesting exercise.
+ * fix this is an interesting exercise. As this is an article about neural
+ * networks and C++ _per se_ I've gone for simplicity of exposition. This is not
+ * code that I'd want in a production system.
  * }}
  *
  * The final thing we need to do before starting to assemble everything is to be
@@ -645,10 +664,10 @@ void operator-=(
  *
  * ## The model
  *
- * We can now start to define our model. We've already defined the nearly all of
- * the actual functionality that we need, now we're just going to put it
- * together. We'll also incorporate our tracking which will hopefully give us
- * some insight into how the model is getting on.
+ * We can now start to define our model. We've already defined nearly all of
+ * the actual functionality that we need, now we just need to put it together.
+ * We'll also incorporate our tracking which will hopefully give us some insight
+ * into how the model is getting on.
  *
  */
 template<std::size_t Weights, std::size_t Cities>
@@ -674,20 +693,20 @@ struct model {
     /**
      * We'll use exponential decay functions with half lives of between five and
      * 200 generations to measure both the success rate (how often our model is
-     * right), and the cross entropy loss values we calculate. These will give
-     * us nicely smoothed out values that will allow us to see the trends in
-     * these values at a glance.
+     * right), and the cross entropy loss values as the model learns. These will
+     * give us nicely smoothed out values that will allow us to see the trends
+     * in at a glance.
      */
     std::array<exponential_decay, 4> success_rate{{{5}, {20}, {50}, {200}}};
     std::array<exponential_decay, 4> losses{{{5}, {20}, {50}, {200}}};
     /**
      * We can now talk about what a training step looks like. Given an example
-     * (a city with a `geopos` describing a location in the city) we want the
-     * use the model:
+     * (a city with a `geopos` describing a location in that city) we want the
+     * model:
      *
      * 1. to predict which city the `geopos` belongs to (also called the
      * "forward pass");
-     * 2. use the `result` to perform our backpropagation (also called the
+     * 2. to use the `result` to perform our backpropagation (also called the
      * "backward pass").
      *
      * It's nice to print out what's happening whilst the model evaluates, but
@@ -713,6 +732,8 @@ struct model {
          * tracking exponential decay functions.
          */
         adjust(losses, result.loss);
+        adjust(success_rate,
+               result.example.city_index == result.answer ? 100.0f : 0.0f);
         /**
          * The use of zero and 100 for the adjustment here allows us to see an
          * accuracy between these two values. If the model stops being correct
@@ -721,8 +742,6 @@ struct model {
          * at the same half life rate. We can roughly interpret these values as
          * the percentage right over shorter or longer terms.
          */
-        adjust(success_rate,
-               result.example.city_index == result.answer ? 100.0f : 0.0f);
         return result;
     }
     /**
@@ -762,8 +781,7 @@ int main() {
      * We'll start with the first worked example. The only example value for
      * alpha given in the video is the 0.0001 that we used as the default. But
      * in the video the learning seems to be much faster. The below value of
-     * 0.06 is much closer to what the video shows results for, but only for the
-     * first two neurons (see below).
+     * 0.06 is much closer to what the video shows results for, but not the same.
      */
 
     one_d::model one{
@@ -795,20 +813,21 @@ int main() {
      * {0.9550 [0.7092]} {0.0452 [0.8712]} {-1.0002 [-0.5762]}
      * ```
      *
-     * The bias and weights for the first two cities in the model (the final
-     * line of output above) are very similar to what's in the video, but not
-     * the final one. It's unclear why this is, and I think the likely culprits
-     * are (in decreasing order of likelihood):
+     * The conclusions of the model are essentially the same as what is in the
+     * video, but the details of numbers are off in various ways. It's unclear
+     * why this is, and I think the likely culprits are (in decreasing order of
+     * likelihood):
      *
      * 1. I've made some mistake somewhere
-     * 2. There's a transcription error in the video
-     * 3. The video example is really doing something a bit different to what it
+     * 2. The alpha value I'm using is too different
+     * 3. There's a transcription error in the video
+     * 4. The video example is really doing something a bit different to what it
      * describes
      *
      * The discrepancy doesn't make any real difference to the rest of the
-     * results though. We'll the model loose, running until the correctness
-     * level for the 20 generation half life exceeds 99.9%, and we'll print out
-     * every 25 generations.
+     * results though. We'll let the model run until the correctness level for
+     * the 20 generation half life exceeds 99.9%, and we'll print out every 25
+     * generations.
      */
     while (one.success_rate[1]() < 99.9f) {
         one_d::example_type const example;
@@ -830,8 +849,8 @@ int main() {
      *
      * We can also initialise the weights randomly with the recommended alpha
      * setting. This time we'll also wait until the 200 generation half life for
-     * correctness to exceed 99.9%. Typical runs are now in the tens of
-     * thousands of generations:
+     * correctness to exceed 99.9% (a much stricter result). Typical runs are
+     * now in the tens of thousands of generations:
      */
     one_d::model random{};
     while (random.success_rate[3]() < 99.9f) {
@@ -848,7 +867,7 @@ int main() {
      * {-0.6857 [-0.7041]} {0.2449 [0.5838]} {-0.3018 [0.7914]}
      * ```
      *
-     * But if the random weights align well it can be very short:
+     * But, if the random weights align well, it can be very short:
      *
      * ```text
      * Generation 2621
@@ -892,4 +911,9 @@ int main() {
  * It's kind of interesting to play around with things like the alpha to see how
  * it affects the results, and the models run quickly enough that
  * experimentation is fast. Have fun playing with it!
+ *
+ * ----
+ *
+ * Thanks to Jeroen Vermeulen, Thomas Natter and Paweł Wolny for reading early
+ * drafts.
  */
