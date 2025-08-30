@@ -36,7 +36,7 @@ Classifier}}
  * think is, more than enough detail to write some code to replicate what is
  * showcased in the video.
  *
- * In this file{{footnote}} I've tried to write a replication of what is show in
+ * In this file{{footnote}} I've tried to write a replication of what is shown in
  * that second video. I've done it in C++ with some explanations of what's
  * happening, but not as much or as thoroughly as in the video. _You should
  * certainly watch the Welch Labs videos first_.
