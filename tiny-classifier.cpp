@@ -4,7 +4,7 @@
     Categories:/C++
     Categories:/Exposition}}
 {{field created 2025-08-18T07:20:42.993Z}}
-{{field lastUpdate 2025-08-29T10:13:09.904Z}}
+{{field lastUpdate 2025-08-30T05:09:47.800Z}}
 {{field displayName Tiny Classifiers/tiny-classifier.cpp — Our First Tiny
 Classifier}}
 */
@@ -54,16 +54,6 @@ Classifier}}
  *
  * As usual, mistakes are all my own. I think this code is an accurate
  * implementation of what is shown in the videos, but _caveat lector_.
- *
- * <aside class="sidebar">
- *
- * Compile and run using:
- *
- * ```bash
- * clang tiny-classifier.cpp -o tiny-classifier && ./tiny-classifier
- * ```
- *
- * </aside>
  *
  *
  * ## The models
