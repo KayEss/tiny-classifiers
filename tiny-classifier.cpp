@@ -4,7 +4,7 @@
     Categories:/C++
     Categories:/Exposition}}
 {{field created 2025-08-18T07:20:42.993Z}}
-{{field lastUpdate 2025-08-30T07:51:26.430Z}}
+{{field lastUpdate 2025-09-07T04:55:36.116Z}}
 {{field displayName Tiny Classifiers/tiny-classifier.cpp — Our First Tiny
 Classifier}}
 */
@@ -24,13 +24,17 @@ Classifier}}
  * 1. [The Misconception that Almost Stopped
  * AI \[How Models Learn Part 1\]](https://www.youtube.com/watch?v=NrO20Jb-hy0)
  * 2. [The F=ma of Artificial Intelligence
- * \[Backpropagation\]](https://www.youtube.com/watch?v=VkHfRKewkWw)
+ * \[Backpropagation\]](https://www.youtube.com/watch?v=VkHfRKewkWw){{footnote}}
  * 3. [Why Deep Learning Works Unreasonably
  * Well](https://www.youtube.com/watch?v=qx7hirqgfuU)
  *
  * The code in this page attempts to replicate the results in the second video.
  *
  * </aside>
+ *
+ * {{footnote
+ * Welch Labs have now kindly linked this page from their video as well.
+ * }}
  *
  * The second video in particular, looked interesting as it contains, what I
  * think is, more than enough detail to write some code to replicate what is
@@ -48,7 +52,8 @@ Classifier}}
  * other headers. They will be mentioned as we use introduce that
  * functionality.
  *
- * In any case [the source code for this file is available on
+ * In any case [the source code for everything needed to build and run this code
+ * is available on
  * Github](https://github.com/KayEss/tiny-classifiers/blob/main/tiny-classifier.cpp).
  * }}
  *
@@ -197,28 +202,27 @@ struct example {
 template<std::size_t Weights>
 struct neuron {
     /**
-     * The number of weights depends on the number of inputs, and we'll be using
-     * both one and two.
-     */
-    using weights_type = std::array<float, Weights>;
-    /**
-     *  There is always a single bias value. We could keep all of these in a
-     * single array, but for clarity let's split them out. In the video the bias
-     * is generally started with zero in the worked through examples, but
-     * setting the bias to a random weight also seems to work quite well, and
-     * presumably can help.
+     * There is always a single bias value. We could keep it and the weights in
+     * a single array, but for clarity let's split it out. In the video the bias
+     * is generally started with a zero value in the worked through examples,
+     * but setting the bias to a random weight also seems to work quite well,
+     * and presumably can help.
      */
     float bias = random_weight();
     /**
-     * We also need to initialise the weights with random numbers. The
-     * `random_weight` function returns a `float` between plus and minus one.
+     * The number of weights depends on the number of inputs, and we'll be using
+     * both one and two. We also need to initialise the weights with random
+     * numbers. The `random_weight` function returns a `float` between plus and
+     * minus one{{footnote}}.
      *
+     * {{footnote
      * To keep the implementation tidy, we define a function `array_of` in
      * [_array.hpp_](./array.hpp) which will give us an array built from
      * multiple copies of the input value, or by applying a lambda.
+     * }}
      */
-    weights_type weights =
-            array_of<Weights>([](auto) { return random_weight(); });
+    std::array<float, Weights> weights =
+            array_of<Weights>([]() { return random_weight(); });
 };
 /**
  *
@@ -314,9 +318,10 @@ struct parameters {
  *
  * The first step for this is to take the location and multiply the weights of
  * each neuron adding in the bias. This multiplication is known as the dot (or
- * inner) product. We'll define a multiply operator for this and, although easy
- * to write ourselves, the standard library [does include a suitable
- * implementation](https://en.cppreference.com/w/cpp/algorithm/inner_product.html).
+ * inner) product. We'll define a multiply operator for this and, although the
+ * standard library [does include a suitable
+ * implementation](https://en.cppreference.com/w/cpp/algorithm/inner_product.html),
+ * we'll implement it ourselves so it's clear what's going on.
  *
  */
 #include <numeric>
@@ -330,8 +335,11 @@ auto operator*(
      * matched pair of floats in the `input` and the `neuron.weights` multiply
      * them and add them to the total. The returned value is a single `float`.
      */
-    return std::inner_product(
-            input.begin(), input.end(), neuron.weights.begin(), neuron.bias);
+    auto total = neuron.bias;
+    by_index(Weights, [&](auto const index) {
+        total += input[index] * neuron.weights[index];
+    });
+    return total;
 }
 /**
  *

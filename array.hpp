@@ -1,6 +1,6 @@
 /**
 {{field created 2025-08-20T03:42:31.726Z}}
-{{field lastUpdate 2025-08-28T10:00:06.159Z}}
+{{field lastUpdate 2025-09-07T04:55:36.116Z}}
 {{field displayName Tiny Classifiers/array.hpp}}
  */
 #pragma once
@@ -18,6 +18,11 @@ constexpr inline auto array_of(V &&v) {
                    std::integer_sequence<std::size_t, Indices...>) {
         return std::array{v(Indices)...};
     }(std::make_index_sequence<N>{});
+}
+
+template<std::size_t N, std::invocable<> V>
+constexpr inline auto array_of(V &&v) {
+    return array_of<N>([&](std::size_t) { return v(); });
 }
 
 template<std::size_t N, std::copyable V>
