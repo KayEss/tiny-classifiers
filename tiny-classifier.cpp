@@ -1,11 +1,10 @@
 /**
 {{links categories
-    Categories:/AI and LLMs
     Categories:/C++
     Categories:/Exposition
     Categories:/LLMs}}
 {{field created 2025-08-18T07:20:42.993Z}}
-{{field lastUpdate 2026-02-27T06:12:35.710Z}}
+{{field lastUpdate 2026-08-22T06:23:31.480812203Z}}
 {{field displayName Tiny Classifiers/tiny-classifier.cpp — Our First Tiny
 Classifier}}
 */
